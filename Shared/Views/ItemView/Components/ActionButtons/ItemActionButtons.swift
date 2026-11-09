@@ -14,6 +14,8 @@ private struct ItemActionButtonLabelStyle: LabelStyle {
     @AdaptiveLayout
     private var viewLayout
 
+    @Environment(\.isFocused)
+    private var isFocused
     @Environment(\.isSelected)
     private var isSelected
 
@@ -40,7 +42,28 @@ private struct ItemActionButtonLabelStyle: LabelStyle {
     }
 
     func makeBody(configuration: Configuration) -> some View {
-        Label(configuration)
+        #if os(tvOS)
+        let isActive = isSelected && activeColor != nil
+
+        return Label(configuration)
+            .labelStyle(.iconOnly)
+            .font(.system(size: 28, weight: .medium))
+            .foregroundStyle(isActive ? Cinema.Palette.background : Cinema.Palette.primaryText)
+            .frame(width: Cinema.Layout.controlHeight, height: Cinema.Layout.controlHeight)
+            .background {
+                RoundedRectangle(cornerRadius: Cinema.Radius.control, style: .continuous)
+                    .fill(isActive ? Cinema.Palette.primaryText : Cinema.Palette.hover.opacity(isFocused ? 1 : 0))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: Cinema.Radius.control, style: .continuous)
+                    .strokeBorder(Color.white.opacity(0.16), lineWidth: Cinema.Stroke.hairline)
+                    .opacity(isActive ? 0 : 1)
+            }
+            .cinemaFocusRing(isFocused)
+            .scaleEffect(isFocused ? 1.04 : 1)
+            .animation(Cinema.Motion.hover, value: isFocused)
+        #else
+        return Label(configuration)
             .labelStyle(.iconOnly)
             .font(.system(size: viewLayout.value(standard: 20, large: 30)))
             .frame(width: iconSize, height: iconSize)
@@ -54,6 +77,7 @@ private struct ItemActionButtonLabelStyle: LabelStyle {
                 ),
                 in: .capsule
             )
+        #endif
     }
 }
 
@@ -209,8 +233,12 @@ struct ItemActionButtons: View {
             }
             .frame(height: viewLayout.controlHeight)
             .environmentObject(provider)
+            #if os(tvOS)
+            .buttonStyle(CinemaPlainButtonStyle())
+            #else
             .buttonBorderShape(.capsule)
             .buttonStyle(BasicHoverButtonStyle())
+            #endif
             .font(.title3)
             .fontWeight(.semibold)
         }

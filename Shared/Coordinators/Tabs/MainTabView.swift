@@ -15,11 +15,6 @@ import SwiftUI
 // TODO: fix weird tvOS icon rendering
 struct MainTabView: View {
 
-    #if os(tvOS)
-    @Default(.Customization.tabBarPlacement)
-    private var tabBarPlacement
-    #endif
-
     @InjectedObject(\.userSessionManager)
     private var userSessionManager
 
@@ -39,22 +34,12 @@ struct MainTabView: View {
         }
         #else
         TabCoordinator {
-            TabItem.contentGroup(provider: DefaultContentGroupProvider())
-
-            TabItem.library(
-                title: L10n.tvShowsCapitalized,
-                systemName: "tv",
-                filters: .init(itemTypes: [.series])
-            )
-
-            TabItem.library(
-                title: L10n.movies,
-                systemName: "film",
-                filters: .init(itemTypes: [.movie])
-            )
-
+            TabItem.cinemaCollection
+            TabItem.cinemaFilms
+            TabItem.cinemaSeries
+            TabItem.cinemaPeople
+            TabItem.cinemaCollections
             TabItem.search
-            TabItem.media
             TabItem.settings
         }
         #endif
@@ -112,17 +97,14 @@ struct MainTabView: View {
         }
     }
 
-    @ViewBuilder
     private func tabContent() -> some View {
         #if os(tvOS)
-        switch tabBarPlacement {
-        case .sidebar:
-            tabView()
-                .tabViewStyle(.sidebarAdaptable)
-
-        case .tabBar:
-            tabView()
-                .tabViewStyle(.tabBarOnly)
+        CinemaShellView(tabCoordinator: tabCoordinator) { tab in
+            GeometryReader { _ in
+                tabRoot(tab)
+            }
+            .trackingFrame(for: .tabView)
+            .eraseToAnyView()
         }
         #else
         tabView()
@@ -140,11 +122,6 @@ struct MainTabView: View {
                     await tabCoordinator.route(to: route)
                 }
             }
-            #if os(tvOS)
-            .background(alignment: .top) {
-                FocusedPosterCinematicBackgroundView()
-            }
-            #endif
     }
 }
 

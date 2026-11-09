@@ -91,9 +91,18 @@ extension Defaults.Keys {
 
 extension Defaults.Keys {
 
+    /// The accent color before a user chooses one.
+    static var defaultAccentColor: Color {
+        #if os(tvOS)
+        Cinema.Palette.accent
+        #else
+        .jellyfinPurple
+        #endif
+    }
+
     /// The saved accent color for a specific user.
     static func userAccentColor(userID: String) -> Key<Color> {
-        userKeys.key("userAccentColor", default: .jellyfinPurple, suiteName: userID)
+        userKeys.key("userAccentColor", default: defaultAccentColor, suiteName: userID)
     }
 
     /// The saved appearance for a specific user.
@@ -168,7 +177,11 @@ extension Defaults.Keys {
         enum Library {
 
             static var cinematicBackground: Key<Bool> {
+                #if os(tvOS)
+                UserKey("libraryCinematicBackground", default: false)
+                #else
                 UserKey("libraryCinematicBackground", default: true)
+                #endif
             }
 
             static var enabledDrawerFilters: Key<[ItemFilterType]> {

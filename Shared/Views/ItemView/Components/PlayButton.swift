@@ -40,37 +40,50 @@ struct PlayButton: View {
         playMedia(intent: playbackIntent)
     }
 
+    private var label: some View {
+        HStack {
+            Image(systemName: "play.fill")
+
+            VStack(spacing: 2) {
+                Text(provider.playbackIntent?.item.playButtonLabel ?? L10n.play)
+
+                if let mediaSource {
+                    Marquee(mediaSource, speed: 40, delay: 3, fade: 5)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                }
+            }
+        }
+    }
+
     var body: some View {
         Button {
             play()
         } label: {
-            HStack {
-                Image(systemName: "play.fill")
-
-                VStack(spacing: 2) {
-                    Text(provider.playbackIntent?.item.playButtonLabel ?? L10n.play)
-
-                    if let mediaSource {
-                        Marquee(mediaSource, speed: 40, delay: 3, fade: 5)
-                            .font(.caption)
-                            .fontWeight(.medium)
-                    }
-                }
-            }
-            .font(.callout)
-            .fontWeight(.semibold)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .backport
-            .glassEffect(
-                .regular.selection(
-                    tint: theme.accentColor,
-                    foregroundColor: theme.accentColor.overlayColor
-                ),
-                in: .capsule
-            )
+            #if os(tvOS)
+            label
+                .frame(maxWidth: .infinity)
+            #else
+            label
+                .font(.callout)
+                .fontWeight(.semibold)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .backport
+                .glassEffect(
+                    .regular.selection(
+                        tint: theme.accentColor,
+                        foregroundColor: theme.accentColor.overlayColor
+                    ),
+                    in: .capsule
+                )
+            #endif
         }
-        .buttonBorderShape(.capsule)
-        .buttonStyle(BasicHoverButtonStyle())
+        #if os(tvOS)
+        .buttonStyle(CinemaPrimaryButtonStyle())
+        #else
+            .buttonBorderShape(.capsule)
+            .buttonStyle(BasicHoverButtonStyle())
+        #endif
         .accessibilityLabel(L10n.play)
         .accessibilityValue(provider.playbackIntent?.item.playButtonLabel ?? L10n.play)
         .contextMenu {

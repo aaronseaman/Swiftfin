@@ -63,6 +63,10 @@ struct ItemView: View {
     }
 
     private var isEnhanced: Bool {
+        #if os(tvOS)
+        // The Cinema item page keeps a flat background behind the poster.
+        return false
+        #else
         switch itemViewType {
         case .enhanced:
             guard provider.item.backdropImageTags?.isNotEmpty == true else {
@@ -81,9 +85,13 @@ struct ItemView: View {
         case .simple:
             return false
         }
+        #endif
     }
 
     private var contentGroups: [any ContentGroup] {
+        #if os(tvOS)
+        let header: any ContentGroup = CinemaHeaderContentGroup(provider: provider)
+        #else
         let header: any ContentGroup = switch (isEnhanced, isEnhanced ? usesCompactEnhancedHeader : isCompact) {
         case (true, true):
             CompactEnhancedHeaderContentGroup(provider: provider)
@@ -94,6 +102,7 @@ struct ItemView: View {
         case (false, false):
             RegularSimpleHeaderContentGroup(provider: provider)
         }
+        #endif
 
         return [header] + viewModel.groups
     }
@@ -180,6 +189,10 @@ struct ItemView: View {
         .errorMessage($provider.actionError)
         #if os(tvOS)
         .toolbarVisibility(.hidden, for: .navigationBar)
+        .background {
+            Cinema.Palette.background
+                .ignoresSafeArea()
+        }
         #else
         .toolbarBackground(isEnhanced ? .hidden : .automatic, for: .navigationBar)
         .toolbar {

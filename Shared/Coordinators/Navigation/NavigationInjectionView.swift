@@ -77,7 +77,10 @@ struct NavigationInjectionView: View {
                     .removingViewContext(.isTabRoot)
             }
             .transformEnvironment(\.frameForParentView) { $0[.tabView] = nil }
-            .background(.regularMaterial)
+            .background {
+                Cinema.Palette.background
+                    .ignoresSafeArea()
+            }
         }
         .fullScreenCover(
             item: $coordinator.presentedFullScreen

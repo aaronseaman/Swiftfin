@@ -55,6 +55,14 @@ struct PosterIndicatorsOverlay: View {
         indicators.contains(.favorited) && item.userData?.isFavorite == true
     }
 
+    private var favoriteColor: Color {
+        #if os(tvOS)
+        Cinema.Palette.accent
+        #else
+        .pink
+        #endif
+    }
+
     private var showsPlayedIndicator: Bool {
         indicators.contains(.played) &&
             item.canBePlayed &&
@@ -74,7 +82,7 @@ struct PosterIndicatorsOverlay: View {
         }
 
         if showsFavoriteIndicator {
-            QuadrantItem(color: .pink) {
+            QuadrantItem(color: favoriteColor) {
                 Text(Image(systemName: "heart.fill"))
                     .accessibilityLabel(L10n.favorited)
             }

@@ -346,6 +346,10 @@ internal enum L10n {
   internal static let collectionFolders = L10n.tr("Localizable", "collectionFolders", fallback: "Collection folders")
   /// Collections
   internal static let collections = L10n.tr("Localizable", "collections", fallback: "Collections")
+  /// %@ collections - count of collections, e.g. 26 collections
+  internal static func collectionsWithCount(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "collectionsWithCount", String(describing: p1), fallback: "%@ collections")
+  }
   /// Color
   internal static let color = L10n.tr("Localizable", "color", fallback: "Color")
   /// Colorist
@@ -600,6 +604,10 @@ internal enum L10n {
   internal static let direct = L10n.tr("Localizable", "direct", fallback: "Direct")
   /// Plays content in its original format. May cause playback issues on unsupported media types.
   internal static let directDescription = L10n.tr("Localizable", "directDescription", fallback: "Plays content in its original format. May cause playback issues on unsupported media types.")
+  /// Directed by %@ - director credit on an item
+  internal static func directedBy(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "directedBy", String(describing: p1), fallback: "Directed by %@")
+  }
   /// Director
   internal static let director = L10n.tr("Localizable", "director", fallback: "Director")
   /// Direct play
@@ -752,6 +760,12 @@ internal enum L10n {
   internal static let file = L10n.tr("Localizable", "file", fallback: "File")
   /// Fill
   internal static let fill = L10n.tr("Localizable", "fill", fallback: "Fill")
+  /// Films
+  internal static let films = L10n.tr("Localizable", "films", fallback: "Films")
+  /// %@ films - count of films, e.g. 162 films
+  internal static func filmsWithCount(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "filmsWithCount", String(describing: p1), fallback: "%@ films")
+  }
   /// Filters
   internal static let filters = L10n.tr("Localizable", "filters", fallback: "Filters")
   /// Folder
@@ -860,6 +874,8 @@ internal enum L10n {
   internal static let imageSource = L10n.tr("Localizable", "imageSource", fallback: "Image source")
   /// Inactive
   internal static let inactive = L10n.tr("Localizable", "inactive", fallback: "Inactive")
+  /// In collection - tab showing how an item sits in the collection
+  internal static let inCollection = L10n.tr("Localizable", "inCollection", fallback: "In collection")
   /// Incorrect pin for %@
   internal static func incorrectPinForUser(_ p1: Any) -> String {
     return L10n.tr("Localizable", "incorrectPinForUser", String(describing: p1), fallback: "Incorrect pin for %@")
@@ -1124,6 +1140,8 @@ internal enum L10n {
   internal static let musicVideos = L10n.tr("Localizable", "musicVideos", fallback: "Music videos")
   /// MVC
   internal static let mvc = L10n.tr("Localizable", "mvc", fallback: "MVC")
+  /// My collection - title of the collection screen
+  internal static let myCollection = L10n.tr("Localizable", "myCollection", fallback: "My collection")
   /// Name
   internal static let name = L10n.tr("Localizable", "name", fallback: "Name")
   /// A name is required
@@ -1258,6 +1276,10 @@ internal enum L10n {
   internal static let people = L10n.tr("Localizable", "people", fallback: "People")
   /// People who helped create or perform specific media.
   internal static let peopleDescription = L10n.tr("Localizable", "peopleDescription", fallback: "People who helped create or perform specific media.")
+  /// %@ people - count of people, e.g. 40 people
+  internal static func peopleWithCount(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "peopleWithCount", String(describing: p1), fallback: "%@ people")
+  }
   /// Perfect match
   internal static let perfectMatch = L10n.tr("Localizable", "perfectMatch", fallback: "Perfect match")
   /// Error requesting %@ permission: %@
@@ -1676,6 +1698,10 @@ internal enum L10n {
   internal static let seriesName = L10n.tr("Localizable", "seriesName", fallback: "Series name")
   /// Series Settings
   internal static let seriesSettings = L10n.tr("Localizable", "seriesSettings", fallback: "Series Settings")
+  /// %@ series - count of series, e.g. 26 series
+  internal static func seriesWithCount(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "seriesWithCount", String(describing: p1), fallback: "%@ series")
+  }
   /// Server
   internal static let server = L10n.tr("Localizable", "server", fallback: "Server")
   /// Server logs
@@ -1872,6 +1898,8 @@ internal enum L10n {
   internal static let tasks = L10n.tr("Localizable", "tasks", fallback: "Tasks")
   /// Tasks are operations that are scheduled to run periodically or can be triggered manually.
   internal static let tasksDescription = L10n.tr("Localizable", "tasksDescription", fallback: "Tasks are operations that are scheduled to run periodically or can be triggered manually.")
+  /// Technical - tab showing technical media information
+  internal static let technical = L10n.tr("Localizable", "technical", fallback: "Technical")
   /// Tbps
   internal static let terabitsPerSecond = L10n.tr("Localizable", "terabitsPerSecond", fallback: "Tbps")
   /// Test
@@ -1906,6 +1934,10 @@ internal enum L10n {
   internal static let timestamp = L10n.tr("Localizable", "timestamp", fallback: "Timestamp")
   /// Title
   internal static let title = L10n.tr("Localizable", "title", fallback: "Title")
+  /// %@ titles - count of titles, e.g. 768 titles
+  internal static func titlesWithCount(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "titlesWithCount", String(describing: p1), fallback: "%@ titles")
+  }
   /// Total time
   internal static let totalTime = L10n.tr("Localizable", "totalTime", fallback: "Total time")
   /// Tracks
