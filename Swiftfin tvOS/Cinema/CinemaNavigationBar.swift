@@ -20,6 +20,16 @@ struct CinemaNavigationBar: View {
     @Binding
     var selection: String?
     let focus: FocusState<String?>.Binding
+    let onSearch: () -> Void
+
+    /// Menu on anything but the first destination returns to it, so the
+    /// landing screen is always one press away; Menu there leaves the app.
+    private func returnToFirstDestination() {
+        guard let first = items.first?.id, selection != first else { return }
+
+        selection = first
+        focus.wrappedValue = first
+    }
 
     private var brand: some View {
         HStack(spacing: Cinema.Spacing.s12) {
@@ -34,13 +44,31 @@ struct CinemaNavigationBar: View {
         .accessibilityElement(children: .combine)
     }
 
+    @ViewBuilder
     private func navigationButton(_ item: TabItem) -> some View {
-        Button(item.displayTitle) {
+        let button = Button(item.displayTitle) {
             selection = item.id
         }
         .buttonStyle(CinemaUnderlineButtonStyle(isSelected: selection == item.id, fillsHeight: true))
         .focused(focus, equals: item.id)
         .accessibilityAddTraits(selection == item.id ? .isSelected : [])
+
+        if item.id == items.first?.id {
+            button
+        } else {
+            button
+                .onExitCommand(perform: returnToFirstDestination)
+        }
+    }
+
+    private var searchButton: some View {
+        Button(action: onSearch) {
+            Image(systemName: "magnifyingglass")
+        }
+        .buttonStyle(CinemaIconButtonStyle(isBordered: false))
+        .focused(focus, equals: CinemaShellView.searchTabID)
+        .accessibilityLabel(L10n.search)
+        .onExitCommand(perform: returnToFirstDestination)
     }
 
     private func utilityButton(_ item: TabItem) -> some View {
@@ -63,6 +91,7 @@ struct CinemaNavigationBar: View {
         .focused(focus, equals: item.id)
         .accessibilityLabel(item.displayTitle)
         .accessibilityAddTraits(selection == item.id ? .isSelected : [])
+        .onExitCommand(perform: returnToFirstDestination)
     }
 
     var body: some View {
@@ -80,6 +109,8 @@ struct CinemaNavigationBar: View {
 
             HStack(spacing: Cinema.Spacing.s8) {
                 Spacer()
+
+                searchButton
 
                 ForEach(utilityItems, id: \.id) { item in
                     utilityButton(item)

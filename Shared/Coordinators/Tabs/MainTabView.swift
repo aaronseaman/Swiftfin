@@ -39,7 +39,6 @@ struct MainTabView: View {
             TabItem.cinemaSeries
             TabItem.cinemaPeople
             TabItem.cinemaCollections
-            TabItem.search
             TabItem.settings
         }
         #endif

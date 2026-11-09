@@ -15,11 +15,6 @@ import SwiftUI
 /// panel; pressing a poster opens the full item page.
 struct CinemaCollectionView<Library: PagingLibrary>: View where Library.Element == ItemEntry {
 
-    private enum Focus: String {
-
-        case firstElement = "cinemaCollection-firstElement"
-    }
-
     @FocusState
     private var isGridFocused: Bool
 
@@ -37,6 +32,8 @@ struct CinemaCollectionView<Library: PagingLibrary>: View where Library.Element 
     @StateObject
     private var focusCoordinator = FocusCoordinator()
     @StateObject
+    private var gridFocus = CinemaGridFocus()
+    @StateObject
     private var gridProxy = CollectionVGridProxy()
     @StateObject
     private var panelViewModel = CinemaDetailPanelViewModel()
@@ -45,8 +42,6 @@ struct CinemaCollectionView<Library: PagingLibrary>: View where Library.Element 
 
     @State
     private var displayType: LibraryDisplayType = .grid
-    @State
-    private var hasRequestedInitialFocus = false
     @State
     private var sortOption: CinemaSortOption?
 
@@ -117,16 +112,24 @@ struct CinemaCollectionView<Library: PagingLibrary>: View where Library.Element 
         .onChange(of: viewModel.elements) {
             selectFirstElementIfNeeded()
         }
+        .onChange(of: viewModel.state) {
+            if viewModel.state == .content {
+                requestGridFocus()
+            }
+        }
         .onChange(of: viewModel.environment) {
             viewModel.refreshForEnvironmentChange()
         }
         .onChange(of: displayType) {
             gridProxy.redraw()
+            requestGridFocus()
         }
         .onReceive(tabItemSelected) { event in
             if event.isRepeat, event.isRoot {
                 gridProxy.scrollToTop(animated: true)
             }
+
+            requestGridFocus()
         }
         .onFirstAppear {
             sortOption = initialSort
@@ -218,6 +221,7 @@ struct CinemaCollectionView<Library: PagingLibrary>: View where Library.Element 
                 Image(systemName: "chevron.down")
                     .font(.system(size: 18, weight: .semibold))
             }
+            .frame(minWidth: 236, alignment: .trailing)
         }
         .menuStyle(.button)
         .buttonStyle(CinemaTextButtonStyle())
@@ -294,8 +298,8 @@ struct CinemaCollectionView<Library: PagingLibrary>: View where Library.Element 
             element(entry)
                 .if(entry.id == viewModel.displayedElements.first?.id) { view in
                     view
-                        .coordinatedFocus(Focus.firstElement.rawValue)
-                        .environmentObject(focusCoordinator)
+                        .cinemaFirstElementFocus()
+                        .environmentObject(gridFocus)
                 }
         }
         .onReachedBottomEdge(offset: .offset(300)) {
@@ -304,6 +308,7 @@ struct CinemaCollectionView<Library: PagingLibrary>: View where Library.Element 
         .proxy(gridProxy)
         .contentInsetAdjustmentBehavior(.never)
         .scrollIndicators(.hidden)
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 
     @ViewBuilder
@@ -333,24 +338,20 @@ struct CinemaCollectionView<Library: PagingLibrary>: View where Library.Element 
     }
 
     private func selectFirstElementIfNeeded() {
-        guard let first = viewModel.elements.first else { return }
+        guard panelViewModel.item == nil, let first = viewModel.elements.first else { return }
 
-        if panelViewModel.item == nil {
-            panelViewModel.select(first.snapshot)
-        }
-
-        requestInitialFocusIfNeeded()
+        panelViewModel.select(first.snapshot)
     }
 
-    /// Moves focus to the first poster once the grid has laid it out.
-    private func requestInitialFocusIfNeeded() {
-        guard !hasRequestedInitialFocus else { return }
-
-        hasRequestedInitialFocus = true
-
+    /// Moves focus to the first poster once the grid has laid it out: after the
+    /// screen is selected, after a sort change, and after a layout change.
+    private func requestGridFocus() {
         Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(250))
-            focusCoordinator.focus(Focus.firstElement.rawValue)
+
+            guard viewModel.state == .content, viewModel.displayedElements.isNotEmpty else { return }
+
+            gridFocus.requestFirstElement()
         }
     }
 

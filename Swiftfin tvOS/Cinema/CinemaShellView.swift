@@ -16,8 +16,8 @@ import SwiftUI
 /// to it restores its scroll position and selection without reloading.
 struct CinemaShellView: View {
 
-    /// Identifiers of the tabs shown as icons at the trailing edge of the bar.
-    /// They match the identifiers declared on `TabItem.search` and `TabItem.settings`.
+    /// The focus identifier of the bar's search button, and the identifier of
+    /// the settings tab, which matches the one declared on `TabItem.settings`.
     static let searchTabID = "search"
     static let settingsTabID = "settings"
 
@@ -63,7 +63,9 @@ struct CinemaShellView: View {
                 utilityItems: utilityItems,
                 selection: $tabCoordinator.selectedTabID,
                 focus: $focusedNavigationItem
-            )
+            ) {
+                Task { await tabCoordinator.route(to: .cinemaSearch) }
+            }
 
             ZStack {
                 ForEach(tabCoordinator.tabs, id: \.item.id) { tab in

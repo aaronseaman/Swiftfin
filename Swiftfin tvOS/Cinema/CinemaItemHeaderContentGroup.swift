@@ -151,7 +151,7 @@ extension ItemView {
                 }
                 .focusSection()
                 .padding(.horizontal, Cinema.Layout.edgePadding)
-                .padding(.top, Cinema.Spacing.s48)
+                .padding(.top, Cinema.Layout.edgePadding + Cinema.Spacing.s24)
                 .frame(maxWidth: .infinity, alignment: .topLeading)
             }
         }

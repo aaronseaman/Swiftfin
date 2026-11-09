@@ -124,7 +124,8 @@ struct CinemaDetailPanel: View {
                     Text(L10n.directedBy(director))
                         .font(Cinema.Typography.meta)
                         .foregroundStyle(Cinema.Palette.secondaryText)
-                        .lineLimit(1)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 let chips = CinemaMediaFormat.chips(for: item.mediaSources?.first)
@@ -399,7 +400,7 @@ struct CinemaDetailPanel: View {
     }
 
     private func castAndCrew(for item: BaseItemDto) -> some View {
-        let people = Array((item.mergedPeople ?? []).prefix(Self.maximumRows * 2))
+        let people = Array((item.mergedPeople ?? []).prefix(6))
         let columns = [
             GridItem(.flexible(), spacing: Cinema.Spacing.s24, alignment: .topLeading),
             GridItem(.flexible(), spacing: Cinema.Spacing.s24, alignment: .topLeading),

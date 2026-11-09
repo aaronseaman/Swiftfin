@@ -10,11 +10,13 @@ permissions) is untouched, and the iOS app is unchanged.
 
 ## What the Apple TV app looks like
 
+![The Collection screen on Apple TV](screenshots/tvos-collection.png)
+
 | Screen | What you see |
 |---|---|
 | Collection (landing) | A split view. Left: the selected title's poster, title, year · runtime · genre, director, format chips (4K UHD, HDR10, Dolby Atmos…), Play / favourite / more, synopsis, and tabs: Overview, Cast & Crew, Technical, In Collection. Right: "My Collection" with title counts, grid/list toggle, a sort menu, and the poster grid with title and year beneath each poster. Moving focus through the grid updates the panel; pressing a poster opens the full item page. |
 | Films, Series, Collections, People | The same split view filtered to one kind. |
-| Search, profile | Icons at the trailing edge of the navigation bar. Profile opens Settings. |
+| Search, profile | Icons at the trailing edge of the navigation bar. Search opens Jellyfin's search page over the current screen; profile opens Settings. |
 | Item page | The original poster beside the title, metadata, format chips, tagline, synopsis and the playback controls, on a flat background, followed by Jellyfin's cast, genre, similar-title and about sections. |
 | Playback | Unchanged. |
 
@@ -63,8 +65,8 @@ New code is confined to `Swiftfin tvOS/Cinema/` and is only compiled for tvOS.
 | File | Role |
 |---|---|
 | `CinemaTheme.swift`, `CinemaFont.swift` | Tokens and the Inter loader (`wght` and `opsz` axes). |
-| `CinemaShellView.swift`, `CinemaNavigationBar.swift` | The persistent navigation bar above a `TabView` whose system bar is hidden. Tabs keep their own navigation coordinators, so deep links, pushes and playback behave as before. Menu at a tab root moves focus to the bar; Menu on the bar leaves the app, as with the system bar. |
-| `CinemaTabItems.swift` | The destinations: Collection, Films, Series, People, Collections, plus the existing Search and Settings tabs. |
+| `CinemaShellView.swift`, `CinemaNavigationBar.swift` | The persistent navigation bar above the selected tab. Tabs are created the first time they are selected and then kept alive, each with its own navigation coordinator, so deep links, pushes and playback behave as before. Menu at a tab root moves focus to the bar; Menu on any bar item other than Collection returns to Collection; Menu on Collection leaves the app, as with the system bar. Selecting a destination moves focus to its first poster, as the system bar does. |
+| `CinemaTabItems.swift` | The destinations: Collection, Films, Series, People, Collections, the Settings tab behind the profile image, and the search route presented from the bar. |
 | `CinemaCollectionView.swift` | The split view over Jellyfin's `PagingLibraryViewModel`: paging, sorting and refresh are the existing library machinery. |
 | `CinemaDetailPanel.swift`, `CinemaDetailPanelViewModel.swift` | The selected-item panel. The panel first shows what the grid already knows, then fetches the full item (overview, people, media streams) 300 ms after focus settles and resolves what Play would start, including the next episode of a series. Favourite and played toggles go through the shared item store. |
 | `CinemaPosterCell.swift`, `CinemaListRow.swift` | Grid and list cells with the Cinema focus treatment. Watched and progress indicators remain available through the poster indicator settings. |
@@ -92,6 +94,20 @@ New strings: `directedBy`, `films`, `filmsWithCount`, `seriesWithCount`, `collec
 - People cannot be re-sorted; the server returns them by name.
 - Jellyfin's filter drawer (genre, year, rating filters) is not shown on the collection
   screen; sorting is. The filters remain on library pages opened from an item.
+
+## Verification
+
+Checked on the Apple TV 4K (1080p) simulator, tvOS 27.0, signed in to the public Jellyfin demo
+server (Jellyfin 12.4): sign-in, the Collection, Films, Series, People and Collections screens,
+grid and list layouts, every sort option, the panel's four tabs and its Play, favourite and menu
+controls, the film and series pages and their sections, Search, Settings, and Menu behaviour at
+every level. Focus moves into the grid after a destination is chosen, after a sort change and
+after a layout change, as it does with the system tab bar; Menu from a grid moves focus to the
+bar, Menu on any bar item other than Collection returns to Collection, and Menu on Collection
+leaves the app. Playback itself was not exercised in the simulator.
+
+Visited tabs stay alive behind the selected one so returning to them keeps their scroll position
+and selection; this is the same cost the system tab bar incurs.
 
 ## Building
 

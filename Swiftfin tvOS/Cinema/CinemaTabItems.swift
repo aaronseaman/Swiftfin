@@ -9,6 +9,17 @@
 import JellyfinAPI
 import SwiftUI
 
+extension NavigationRoute {
+
+    /// Search is presented over the current tab so the system search
+    /// field keeps the whole screen, as it does elsewhere on tvOS.
+    static var cinemaSearch: NavigationRoute {
+        NavigationRoute(id: "cinema-search") {
+            SearchView()
+        }
+    }
+}
+
 /// The destinations in the Cinema navigation bar.
 extension TabItem {
 
